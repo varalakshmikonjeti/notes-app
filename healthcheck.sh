@@ -1,9 +1,12 @@
 #!/bin/bash
 
 HEALTH_URL="http://localhost:5000/health"
-MAX_RETRIES=3
+MAX_RETRIES=5
 TIMEOUT=10
-WAIT_BETWEEN=5
+WAIT_BETWEEN=10
+
+echo "Waiting 15s for app to start..."
+sleep 15
 
 echo "Starting health check..."
 

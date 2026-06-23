@@ -3,20 +3,19 @@
 APP_IMAGE="notes-app"
 PREV_IMAGE="notes-app-prev"
 CONTAINER_NAME="notes-app-container"
+DATABASE_URL="${DATABASE_URL}"
 
 rollback() {
     echo "Rolling back to previous version..."
     
-    # Stop current broken container
     docker stop $CONTAINER_NAME || true
     docker rm $CONTAINER_NAME || true
     
-    # Check if previous image exists
     if docker image inspect $PREV_IMAGE &>/dev/null; then
         echo "Previous image found. Starting rollback container..."
         docker run -d \
             --name $CONTAINER_NAME \
-            --env-file .env \
+            -e DATABASE_URL=$DATABASE_URL \
             -p 5000:5000 \
             --restart unless-stopped \
             $PREV_IMAGE
@@ -30,17 +29,13 @@ rollback() {
 deploy() {
     echo "Deploying new version..."
     
-    # Save previous image
     docker tag $APP_IMAGE $PREV_IMAGE || true
-    
-    # Stop existing container
     docker stop $CONTAINER_NAME || true
     docker rm $CONTAINER_NAME || true
     
-    # Start new container
     docker run -d \
         --name $CONTAINER_NAME \
-        --env-file .env \
+        -e DATABASE_URL=$DATABASE_URL \
         -p 5000:5000 \
         --restart unless-stopped \
         $APP_IMAGE
@@ -48,7 +43,6 @@ deploy() {
     echo "Deployment done!"
 }
 
-# Check argument
 if [ "$1" = "rollback" ]; then
     rollback
 else
