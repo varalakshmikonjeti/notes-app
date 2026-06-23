@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS note (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL
+);
